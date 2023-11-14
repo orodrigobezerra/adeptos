@@ -150,19 +150,27 @@ class AdeptosView:
             indice_distrito = distritos.index(distrito)
             quantidades_por_equipe_e_distrito[indice_equipe, indice_distrito] += quantidade
 
+        # Calcula a soma total de cada distrito
+        soma_por_distrito = np.sum(quantidades_por_equipe_e_distrito, axis=0)
+
+        # Ordena os distritos com base na soma total
+        distritos_ordenados = [distrito for _, distrito in sorted(zip(soma_por_distrito, distritos), reverse=True)]
+
         # Configuração das cores
         cores = {'Benfica': 'red', 'Sporting': 'green', 'Porto': 'blue', 'Outros': 'orange'}
 
         # Cria o gráfico de barras empilhadas
         fig, ax = plt.subplots()
-        bottom = np.zeros(len(distritos))
+        bottom = np.zeros(len(distritos_ordenados))
 
         for i, equipe in enumerate(equipas):
-            barra = ax.bar(distritos, quantidades_por_equipe_e_distrito[i], color=cores.get(equipe, 'gray'), label=equipe, bottom=bottom)
-            bottom += quantidades_por_equipe_e_distrito[i]
+            # Reorganiza as barras com base na ordem dos distritos ordenados
+            barra = ax.bar(distritos_ordenados, [quantidades_por_equipe_e_distrito[i, distritos.index(distrito)] for distrito in distritos_ordenados],
+                        color=cores.get(equipe, 'gray'), label=equipe, bottom=bottom)
+            bottom += [quantidades_por_equipe_e_distrito[i, distritos.index(distrito)] for distrito in distritos_ordenados]
 
             # Adiciona o número de adeptos no meio de cada barra (quando a quantidade é maior que 0)
-            for rect, quantidade in zip(barra, quantidades_por_equipe_e_distrito[i]):
+            for rect, quantidade in zip(barra, [quantidades_por_equipe_e_distrito[i, distritos.index(distrito)] for distrito in distritos_ordenados]):
                 if quantidade > 0:
                     height = rect.get_height()
                     width = rect.get_width()
