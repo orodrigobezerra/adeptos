@@ -10,9 +10,10 @@ class AdeptosView:
         self.cadastrar_callback = cadastrar_callback
 
         master.title('Inquérito de Adeptos')
-        master.geometry('595x255')
+        master.geometry('540x285')
 
         icon = Image.open(r"/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/form.png")  # ícone
+        icon = icon.resize((25, 25))
         icon_photo = ImageTk.PhotoImage(icon)
         master.tk.call("wm", "iconphoto", master._w, icon_photo)
 
@@ -27,7 +28,9 @@ class AdeptosView:
         frame_info_adepto = tk.Frame(frame_principal, bd=1, relief="solid")
         frame_info_adepto.grid(row=0, column=0, padx=10, pady=10, sticky="n")
 
-        tk.Label(frame_info_adepto, text="Cadastrar adepto", font=("Helvetica", 16, "bold")).grid(row=0, column=0, columnspan=2, pady=10)
+        title_label_adepto = tk.Label(frame_info_adepto, text="Cadastrar adepto", font=("Helvetica", 16, "bold"))
+        title_label_adepto.grid(row=0, column=0, columnspan=2, pady=10, sticky='N')
+        self.add_icon_to_label(title_label_adepto, "/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/bola.png")
 
         tk.Label(frame_info_adepto, text="Nome:").grid(row=1, column=0, padx=5, pady=5, sticky="w")
         self.entry_nome = tk.Entry(frame_info_adepto)
@@ -37,13 +40,13 @@ class AdeptosView:
         self.entry_idade = tk.Entry(frame_info_adepto)
         self.entry_idade.grid(row=2, column=1, padx=5, pady=5)
 
-        tk.Label(frame_info_adepto, text="Escolha o Distrito:").grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        tk.Label(frame_info_adepto, text="Distrito:").grid(row=3, column=0, padx=5, pady=5, sticky="w")
         self.distrito = ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro', 'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo', 'Vila Real', 'Viseu']
         self.selected_distrito = tk.StringVar(frame_info_adepto)
         self.dropdown_distrito = tk.OptionMenu(frame_info_adepto, self.selected_distrito, *self.distrito)
         self.dropdown_distrito.grid(row=3, column=1, padx=5, pady=5)
 
-        tk.Label(frame_info_adepto, text="Escolha a equipa:").grid(row=4, column=0, padx=5, pady=5, sticky="w")
+        tk.Label(frame_info_adepto, text="Equipa:").grid(row=4, column=0, padx=5, pady=5, sticky="w")
         self.equipas = ['Benfica', 'Porto', 'Sporting', 'Outros']
         self.selected_equipa = tk.StringVar(frame_info_adepto)
         self.dropdown_equipa = tk.OptionMenu(frame_info_adepto, self.selected_equipa, *self.equipas)
@@ -54,10 +57,14 @@ class AdeptosView:
 
         # Frame para botões de gráficos (coluna da direita)
         frame_botoes = tk.Frame(frame_principal, bd=1, relief="solid")
-        frame_botoes.grid(row=0, column=1, padx=10, pady=10, rowspan=5, columnspan=2, sticky="n")
+        frame_botoes.grid(row=0, column=1, padx=10, pady=10, columnspan=2, sticky="n")
 
-        tk.Label(frame_botoes, text="Gerar gráficos", font=("Helvetica", 16, "bold")).grid(row=0, column=0, columnspan=2, pady=10)
+        title_label_botoes = tk.Label(frame_botoes, text="Gerar gráficos", font=("Helvetica", 16, "bold"))
+        title_label_botoes.grid(row=0, column=0, columnspan=2, pady=10, sticky='N')
+        self.add_icon_to_label(title_label_botoes, "/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/form.png")
 
+
+        # Adjust the row of the buttons
         self.btn_plot_barras = tk.Button(frame_botoes, text="Qtde de Adeptos", command=self.plot_barras)
         self.btn_plot_barras.grid(row=1, column=0, padx=5, pady=5, sticky="N")
 
@@ -78,8 +85,34 @@ class AdeptosView:
         self.entry_nome.delete(0, tk.END)
         self.entry_idade.delete(0, tk.END)
 
+    def add_icon_to_widget(self, widget, icon_path):
+        icon = Image.open(icon_path)
+        icon = icon.resize((25, 25))
+        icon = ImageTk.PhotoImage(icon)
+        icon_label = tk.Label(widget, image=icon)
+        icon_label.image = icon
+        icon_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
-    
+    def add_icon_to_label(self, label, icon_path):
+        icon = Image.open(icon_path)
+        icon = icon.resize((25, 25))
+        icon = ImageTk.PhotoImage(icon)
+
+        # Create a frame to hold both the icon and the label text
+        frame = tk.Frame(label, padx=5, pady=5)
+        frame.grid(row=0, column=0, sticky='w')
+
+        # Add the icon to the frame
+        icon_label = tk.Label(frame, image=icon)
+        icon_label.image = icon
+        icon_label.grid(row=0, column=0, padx=(0, 5), pady=5, sticky='w')
+
+        # Add the label text to the frame
+        text_label = tk.Label(frame, text=label.cget("text"), font=label.cget("font"))
+        text_label.grid(row=0, column=1, padx=(0, 5), pady=5, sticky='w')
+
+        return frame
+
     def plot_barras(self):
         dados = self.adeptos_controller.get_dados_para_grafico()
 
@@ -106,7 +139,6 @@ class AdeptosView:
         plt.ylabel('Quantidade de Adeptos')
         plt.title('Quantidade de Adeptos por Equipa')
         plt.show()
-
 
     def plot_linha(self):
         dados = self.adeptos_controller.get_dados_para_grafico()
@@ -143,7 +175,6 @@ class AdeptosView:
         plt.title('Média de Idade dos Adeptos por Equipa')
         plt.show()
 
-
     def plot_barras_empilhadas(self):
         dados = self.adeptos_controller.get_dados_para_grafico()
         distritos = sorted(list(set([row[1] for row in dados])))
@@ -177,7 +208,7 @@ class AdeptosView:
         for i, equipe in enumerate(equipas):
             # Reorganiza as barras com base na ordem dos distritos ordenados
             barra = ax.bar(distritos_ordenados, [quantidades_por_equipe_e_distrito[i, distritos.index(distrito)] for distrito in distritos_ordenados],
-                        color=cores.get(equipe, 'gray'), label=equipe, bottom=bottom)
+                           color=cores.get(equipe, 'gray'), label=equipe, bottom=bottom)
             bottom += [quantidades_por_equipe_e_distrito[i, distritos.index(distrito)] for distrito in distritos_ordenados]
 
             # Adiciona o número de adeptos no meio de cada barra (quando a quantidade é maior que 0)
