@@ -13,7 +13,6 @@ class AdeptosView:
         master.geometry('540x285')
 
         icon = Image.open(r"/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/form.png")  # ícone
-        icon = icon.resize((25, 25))
         icon_photo = ImageTk.PhotoImage(icon)
         master.tk.call("wm", "iconphoto", master._w, icon_photo)
 
@@ -84,6 +83,8 @@ class AdeptosView:
     def clear_fields(self):
         self.entry_nome.delete(0, tk.END)
         self.entry_idade.delete(0, tk.END)
+        self.selected_distrito.set(None)
+        self.selected_equipa.set(None)
 
     def add_icon_to_widget(self, widget, icon_path):
         icon = Image.open(icon_path)
