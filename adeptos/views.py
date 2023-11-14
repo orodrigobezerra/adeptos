@@ -8,54 +8,64 @@ class AdeptosView:
         self.master = master
         self.adeptos_controller = adeptos_controller
         self.cadastrar_callback = cadastrar_callback
-        
-        master.title('Inquérito de Adeptos')
-        master.geometry('600x400')
 
-        icon = Image.open(r"/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/form.png") # icon
-        icon_photo =ImageTk.PhotoImage(icon)
-        master.tk.call("wm","iconphoto", master._w,icon_photo)
-        
+        master.title('Inquérito de Adeptos')
+        master.geometry('595x255')
+
+        icon = Image.open(r"/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/form.png")  # ícone
+        icon_photo = ImageTk.PhotoImage(icon)
+        master.tk.call("wm", "iconphoto", master._w, icon_photo)
+
         self.create_widgets()
 
     def create_widgets(self):
-        self.label_nome = tk.Label(self.master, text="Nome:")
-        self.label_nome.pack()
-        self.entry_nome = tk.Entry(self.master)
-        self.entry_nome.pack()
+        # Frame principal
+        frame_principal = tk.Frame(self.master, bg='gray')
+        frame_principal.pack(padx=0, pady=0)
 
-        self.label_idade = tk.Label(self.master, text="Idade:")
-        self.label_idade.pack()
-        self.entry_idade = tk.Entry(self.master)
-        self.entry_idade.pack()
+        # Frame para informações do adepto (coluna da esquerda)
+        frame_info_adepto = tk.Frame(frame_principal, bd=1, relief="solid")
+        frame_info_adepto.grid(row=0, column=0, padx=10, pady=10, sticky="n")
 
-        self.label_distrito = tk.Label(self.master, text="Escolha o Distrito:")
-        self.label_distrito.pack()
-        self.distrito = ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro', 'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo', 'Vila Real', 'Viseu']  
-        self.selected_distrito = tk.StringVar(self.master)
-        self.dropdown = tk.OptionMenu(self.master, self.selected_distrito, *self.distrito)
-        self.dropdown.pack()
-        
-        self.label_equipa = tk.Label(self.master, text="Escolha a equipa:")
-        self.label_equipa.pack()
+        tk.Label(frame_info_adepto, text="Cadastrar adepto", font=("Helvetica", 16, "bold")).grid(row=0, column=0, columnspan=2, pady=10)
 
-        self.equipas = ['Benfica', 'Porto', 'Sporting', 'Outros']  
-        self.selected_equipa = tk.StringVar(self.master)
-        self.dropdown = tk.OptionMenu(self.master, self.selected_equipa, *self.equipas)
-        self.dropdown.pack()
+        tk.Label(frame_info_adepto, text="Nome:").grid(row=1, column=0, padx=5, pady=5, sticky="w")
+        self.entry_nome = tk.Entry(frame_info_adepto)
+        self.entry_nome.grid(row=1, column=1, padx=5, pady=5)
 
-        self.btn_cadastrar = tk.Button(self.master, text="Cadastrar", command=self.cadastrar_callback)
-        self.btn_cadastrar.pack()
+        tk.Label(frame_info_adepto, text="Idade:").grid(row=2, column=0, padx=5, pady=5, sticky="w")
+        self.entry_idade = tk.Entry(frame_info_adepto)
+        self.entry_idade.grid(row=2, column=1, padx=5, pady=5)
 
-        self.btn_plot_barras = tk.Button(self.master, text="Qtde de Adeptos", command=self.plot_barras)
-        self.btn_plot_barras.pack()
+        tk.Label(frame_info_adepto, text="Escolha o Distrito:").grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        self.distrito = ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro', 'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo', 'Vila Real', 'Viseu']
+        self.selected_distrito = tk.StringVar(frame_info_adepto)
+        self.dropdown_distrito = tk.OptionMenu(frame_info_adepto, self.selected_distrito, *self.distrito)
+        self.dropdown_distrito.grid(row=3, column=1, padx=5, pady=5)
 
-        self.btn_plot_linha = tk.Button(self.master, text="Média de idade dos Adeptos ", command=self.plot_linha)
-        self.btn_plot_linha.pack()
+        tk.Label(frame_info_adepto, text="Escolha a equipa:").grid(row=4, column=0, padx=5, pady=5, sticky="w")
+        self.equipas = ['Benfica', 'Porto', 'Sporting', 'Outros']
+        self.selected_equipa = tk.StringVar(frame_info_adepto)
+        self.dropdown_equipa = tk.OptionMenu(frame_info_adepto, self.selected_equipa, *self.equipas)
+        self.dropdown_equipa.grid(row=4, column=1, padx=5, pady=5)
 
-        self.btn_plot_barras_empilhadas = tk.Button(self.master, text="Adeptos por Distrito", command=self.plot_barras_empilhadas)
-        self.btn_plot_barras_empilhadas.pack()
+        self.btn_cadastrar = tk.Button(frame_info_adepto, text="Cadastrar", command=self.cadastrar_callback)
+        self.btn_cadastrar.grid(row=5, column=0, columnspan=2, pady=10, sticky="N")
 
+        # Frame para botões de gráficos (coluna da direita)
+        frame_botoes = tk.Frame(frame_principal, bd=1, relief="solid")
+        frame_botoes.grid(row=0, column=1, padx=10, pady=10, rowspan=5, columnspan=2, sticky="n")
+
+        tk.Label(frame_botoes, text="Gerar gráficos", font=("Helvetica", 16, "bold")).grid(row=0, column=0, columnspan=2, pady=10)
+
+        self.btn_plot_barras = tk.Button(frame_botoes, text="Qtde de Adeptos", command=self.plot_barras)
+        self.btn_plot_barras.grid(row=1, column=0, padx=5, pady=5, sticky="N")
+
+        self.btn_plot_linha = tk.Button(frame_botoes, text="Média de idade dos Adeptos", command=self.plot_linha)
+        self.btn_plot_linha.grid(row=2, column=0, padx=5, pady=5, sticky="N")
+
+        self.btn_plot_barras_empilhadas = tk.Button(frame_botoes, text="Adeptos por Distrito", command=self.plot_barras_empilhadas)
+        self.btn_plot_barras_empilhadas.grid(row=3, column=0, padx=5, pady=5, sticky="N")
 
     def get_adepto_info(self):
         nome = self.entry_nome.get()
@@ -67,6 +77,7 @@ class AdeptosView:
     def clear_fields(self):
         self.entry_nome.delete(0, tk.END)
         self.entry_idade.delete(0, tk.END)
+
 
     
     def plot_barras(self):
@@ -181,6 +192,3 @@ class AdeptosView:
         plt.title('Quantidade de Adeptos por Distrito por Equipa')
         plt.legend()
         plt.show()
-
-
-
