@@ -8,9 +8,12 @@ def cadastrar():
     adeptos_controller.cadastro_adepto(nome, idade, distrito, equipa)
     view.clear_fields()
     messagebox.showinfo("Sucesso", "Adepto cadastrado com sucesso.")
+    icon_path = '/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/bola.png'
+    top = tk.Toplevel()
+    top.iconbitmap(icon_path)
 
-    # Chama o método para plotar o gráfico
-    view.plot_grafico()
+"""     # Chama o método para plotar o gráfico
+    view.plot_grafico() """
 
 
 if __name__ == "__main__":

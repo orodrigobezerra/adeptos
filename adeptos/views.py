@@ -1,5 +1,7 @@
 import tkinter as tk
 import matplotlib.pyplot as plt
+from PIL import Image, ImageTk
+import numpy as np
 
 class AdeptosView:
     def __init__(self, master, adeptos_controller, cadastrar_callback):
@@ -9,6 +11,10 @@ class AdeptosView:
         
         master.title('Inquérito de Adeptos')
         master.geometry('600x400')
+
+        icon = Image.open(r"/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/form.png") # icon
+        icon_photo =ImageTk.PhotoImage(icon)
+        master.tk.call("wm","iconphoto", master._w,icon_photo)
         
         self.create_widgets()
 
@@ -47,8 +53,8 @@ class AdeptosView:
         self.btn_plot_linha = tk.Button(self.master, text="Média de idade dos Adeptos ", command=self.plot_linha)
         self.btn_plot_linha.pack()
 
-        self.btn_plot_pizza = tk.Button(self.master, text="Adeptos por Distrito", command=self.plot_pizza)
-        self.btn_plot_pizza.pack()
+        self.btn_plot_barras_empilhadas = tk.Button(self.master, text="Adeptos por Distrito", command=self.plot_barras_empilhadas)
+        self.btn_plot_barras_empilhadas.pack()
 
 
     def get_adepto_info(self):
@@ -62,19 +68,19 @@ class AdeptosView:
         self.entry_nome.delete(0, tk.END)
         self.entry_idade.delete(0, tk.END)
 
-    def plot_barras(self):
-        self.plot_grafico(tipo_grafico='barras')
-
-    def plot_linha(self):
-        self.plot_grafico(tipo_grafico='linha')
-
-    def plot_ambos(self):
-        self.plot_grafico(tipo_grafico='ambos')
     
     def plot_barras(self):
         dados = self.adeptos_controller.get_dados_para_grafico()
-        equipas = [row[0] for row in dados]
-        quantidades = [row[2] for row in dados]
+
+        soma_por_equipa = {'Benfica': 0, 'Sporting': 0, 'Porto': 0, 'Outros': 0}
+
+        for row in dados:
+            equipe = row[0]
+            quantidade = row[2]
+            soma_por_equipa[equipe] += quantidade
+
+        equipas = list(soma_por_equipa.keys())
+        quantidades = list(soma_por_equipa.values())
 
         cores = {'Benfica': 'red', 'Sporting': 'green', 'Porto': 'blue', 'Outros': 'orange'}
 
@@ -93,38 +99,79 @@ class AdeptosView:
 
     def plot_linha(self):
         dados = self.adeptos_controller.get_dados_para_grafico()
-        equipas = [row[0] for row in dados]
-        medias_idade = [row[3] for row in dados]
+
+        media_idade_por_equipa = {'Benfica': 0, 'Sporting': 0, 'Porto': 0, 'Outros': 0}
+
+        contagem_por_equipa = {'Benfica': 0, 'Sporting': 0, 'Porto': 0, 'Outros': 0}
+
+        for row in dados:
+            equipe = row[0]
+            quantidade = row[2]
+            idade_media = row[3]
+
+            media_idade_por_equipa[equipe] += idade_media * quantidade
+            contagem_por_equipa[equipe] += quantidade
+
+        for equipe in media_idade_por_equipa:
+            if contagem_por_equipa[equipe] > 0:
+                media_idade_por_equipa[equipe] /= contagem_por_equipa[equipe]
+
+        equipas = list(media_idade_por_equipa.keys())
+        medias_idade = list(media_idade_por_equipa.values())
+
+        cores = {'Benfica': 'red', 'Sporting': 'green', 'Porto': 'blue', 'Outros': 'orange'}
 
         fig, ax = plt.subplots()
-        line = ax.plot(equipas, medias_idade, marker='o')
+        ax.plot(equipas, medias_idade, marker='o')
 
         for i, txt in enumerate(medias_idade):
-            ax.annotate(round(txt, 2), (equipas[i], medias_idade[i]))
+            ax.annotate(round(txt, 1), (equipas[i], medias_idade[i]))
 
         plt.xlabel('Equipa')
         plt.ylabel('Média de Idade')
         plt.title('Média de Idade dos Adeptos por Equipa')
         plt.show()
 
-    def plot_pizza(self):
-        dados = self.adeptos_controller.get_dados_para_grafico()
-        distritos = [row[1] for row in dados]
-        quantidades = [row[2] for row in dados]
-        equipas = [row[0] for row in dados]
 
+    def plot_barras_empilhadas(self):
+        dados = self.adeptos_controller.get_dados_para_grafico()
+        distritos = sorted(list(set([row[1] for row in dados])))
+        equipas = ['Benfica', 'Sporting', 'Porto', 'Outros']
+
+        # Inicializa uma matriz para armazenar as quantidades por equipe e distrito
+        quantidades_por_equipe_e_distrito = np.zeros((len(equipas), len(distritos)))
+
+        # Preenche a matriz com as quantidades
+        for row in dados:
+            equipe = row[0]
+            distrito = row[1]
+            quantidade = row[2]
+            indice_equipe = equipas.index(equipe)
+            indice_distrito = distritos.index(distrito)
+            quantidades_por_equipe_e_distrito[indice_equipe, indice_distrito] += quantidade
+
+        # Configuração das cores
         cores = {'Benfica': 'red', 'Sporting': 'green', 'Porto': 'blue', 'Outros': 'orange'}
 
+        # Cria o gráfico de barras empilhadas
         fig, ax = plt.subplots()
-        wedges, texts, autotexts = ax.pie(quantidades, labels=distritos, autopct='%1.1f%%', startangle=90,
-                                        colors=[cores.get(equipe, 'gray') for equipe in equipas])
+        bottom = np.zeros(len(distritos))
 
-        # Adiciona o nome da equipe como legenda de cor
-        for i, txt in enumerate(autotexts):
-            txt.set_text(f'{equipas[i]} - {txt.get_text()}')
+        for i, equipe in enumerate(equipas):
+            barra = ax.bar(distritos, quantidades_por_equipe_e_distrito[i], color=cores.get(equipe, 'gray'), label=equipe, bottom=bottom)
+            bottom += quantidades_por_equipe_e_distrito[i]
 
-        plt.axis('equal')
+            # Adiciona o número de adeptos no meio de cada barra (quando a quantidade é maior que 0)
+            for rect, quantidade in zip(barra, quantidades_por_equipe_e_distrito[i]):
+                if quantidade > 0:
+                    height = rect.get_height()
+                    width = rect.get_width()
+                    ax.text(rect.get_x() + width / 2, rect.get_y() + height / 2, f'{int(quantidade)}', ha='center', va='center', color='white')
+
+        plt.xlabel('Distrito')
+        plt.ylabel('Quantidade de Adeptos')
         plt.title('Quantidade de Adeptos por Distrito por Equipa')
+        plt.legend()
         plt.show()
 
 
