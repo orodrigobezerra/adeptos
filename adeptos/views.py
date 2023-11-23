@@ -9,6 +9,9 @@ import os
 from reportlab.pdfgen import canvas
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from reportlab.lib.pagesizes import letter
+import matplotlib.image as mpimg
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+import matplotlib.offsetbox as offsetbox
 
 class AdeptosView:
     def __init__(self, master, adeptos_controller, cadastrar_callback):
@@ -195,21 +198,38 @@ class AdeptosView:
         cores = {'Benfica': 'red', 'Sporting': 'green', 'Porto': 'blue', 'Outros': 'orange'}
 
         fig, ax = plt.subplots(figsize=(12, 6))
-        bars = ax.bar(equipas, quantidades, color=[cores.get(equipe, 'gray') for equipe in equipas])
 
-        for bar in bars:
+        # Adiciona uma imagem no lugar do nome da equipe no eixo x
+        for equipe, quantidade, bar in zip(equipas, quantidades, ax.bar(equipas, quantidades, color=[cores.get(equipe, 'gray') for equipe in equipas])):
             yval = bar.get_height()
             plt.text(bar.get_x() + bar.get_width() / 2, yval, round(yval, 2), ha='center', va='bottom')
 
-        plt.xlabel('Equipa')
+            # Substitua 'caminho/para/sua/imagem1.png', 'caminho/para/sua/imagem2.png', etc., pelos caminhos reais para suas imagens
+            img_paths = {'Benfica': 'benfica.png', 'Sporting': 'sporting.png', 'Porto': 'porto.png', 'Outros': 'port.png'}
+
+            img_path = img_paths.get(equipe, 'port.png')  # Use uma imagem padrão se a equipe não tiver uma imagem específica
+            img = plt.imread(img_path)
+
+            img_height = bar.get_height() * 0.8  # Ajuste para a altura da barra
+            img_width = bar.get_width() * 0.8  # Ajuste para a largura da barra
+            img_x = bar.get_x() + bar.get_width() * 0.5  # Ajuste para posicionar um pouco mais à direita
+
+            imagebox = offsetbox.OffsetImage(img, zoom=0.3, resample=True, clip_path=None, clip_box=None)
+            ab = offsetbox.AnnotationBbox(imagebox, (img_x, yval - img_height / 2), frameon=False, xycoords='data', boxcoords="data", pad=0)
+            ax.add_artist(ab)
+
+        plt.xlabel('')  # Remover o rótulo padrão do eixo x
         plt.ylabel('Quantidade de Adeptos')
         plt.title('Quantidade de Adeptos por Equipa')
+
+        ax.set_xticks([])  # Remover os ticks do eixo x
+        ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
         # Salva o gráfico no PDF
         if pdf is None:
             plt.show()
         else:
-        # Se pdf for fornecido, salva o gráfico no PDF
+            # Se pdf for fornecido, salva o gráfico no PDF
             pdf.savefig()
             plt.close()
 
