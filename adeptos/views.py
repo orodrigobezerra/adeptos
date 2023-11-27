@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 from PIL import Image, ImageTk
 from tkinter import filedialog
 import os
@@ -7,7 +8,7 @@ from matplotlib.backends.backend_pdf import PdfPages
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MaxNLocator
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 import matplotlib.offsetbox as offsetbox
 
 
@@ -306,7 +307,6 @@ class AdeptosView:
 
         fig, ax = plt.subplots(figsize=(12, 6))
 
-        # Adiciona uma imagem no lugar do nome da equipe no eixo x
         for equipe, quantidade, bar in zip(
             equipas,
             quantidades,
@@ -325,7 +325,6 @@ class AdeptosView:
                 va="bottom",
             )
 
-            # Substitua 'caminho/para/sua/imagem1.png', 'caminho/para/sua/imagem2.png', etc., pelos caminhos reais para suas imagens
             img_paths = {
                 "Benfica": "benfica.png",
                 "Sporting": "sporting.png",
@@ -335,40 +334,35 @@ class AdeptosView:
 
             img_path = img_paths.get(
                 equipe, "port.png"
-            )  # Use uma imagem padrão se a equipe não tiver uma imagem específica
+            )
             img = plt.imread(img_path)
 
-            img_height = bar.get_height() * 0.8  # Ajuste para a altura da barra
-            img_width = bar.get_width() * 0.8  # Ajuste para a largura da barra
+            img_height = bar.get_height() * 0.8
+            img_width = bar.get_width() * 0.8
             img_x = (
                 bar.get_x() + bar.get_width() * 0.5
-            )  # Ajuste para posicionar um pouco mais à direita
-
-            imagebox = offsetbox.OffsetImage(
-                img, zoom=0.3, resample=True, clip_path=None, clip_box=None
             )
-            ab = offsetbox.AnnotationBbox(
-                imagebox,
+
+            imagebox = AnnotationBbox(
+                OffsetImage(img, zoom=0.3, resample=True, clip_path=None, clip_box=None),
                 (img_x, yval - img_height / 2),
                 frameon=False,
                 xycoords="data",
                 boxcoords="data",
                 pad=0,
             )
-            ax.add_artist(ab)
+            ax.add_artist(imagebox)
 
-        plt.xlabel("")  # Remover o rótulo padrão do eixo x
+        plt.xlabel("")
         plt.ylabel("Quantidade de Adeptos")
         plt.title("Quantidade de Adeptos por Equipa")
 
-        ax.set_xticks([])  # Remover os ticks do eixo x
+        ax.set_xticks([])
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 
-        # Salva o gráfico no PDF
         if pdf is None:
             plt.show()
         else:
-            # Se pdf for fornecido, salva o gráfico no PDF
             pdf.savefig()
             plt.close()
 
