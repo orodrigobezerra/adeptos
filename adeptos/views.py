@@ -23,7 +23,7 @@ class AdeptosView:
 
         # Carregar a imagem usando o Pillow (PIL)
         background_image = Image.open(
-            "/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/campo.png"
+            "/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/images/campo.png"
         )
         self.background_photo = ImageTk.PhotoImage(background_image)
 
@@ -35,7 +35,7 @@ class AdeptosView:
         self.create_widgets()
 
         icon = Image.open(
-            r"/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/form.png"
+            r"/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/images/form.png"
         )  # ícone
         icon_photo = ImageTk.PhotoImage(icon)
         master.tk.call("wm", "iconphoto", master._w, icon_photo)
@@ -70,7 +70,7 @@ class AdeptosView:
         title_label_adepto.grid(row=0, column=0, columnspan=2, pady=10, sticky="N")
         self.add_icon_to_label(
             title_label_adepto,
-            "/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/bola.png",
+            "/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/images/bola.png",
         )
 
         ttk.Label(frame_info_adepto, text="Nome:").grid(
@@ -140,7 +140,7 @@ class AdeptosView:
         title_label_botoes.grid(row=0, column=0, columnspan=2, pady=(0, 8), sticky="N")
         self.add_icon_to_label(
             title_label_botoes,
-            "/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/form.png",
+            "/Users/rodrigo/Documents/Estudos/Projetos pessoais/Projetos/Projetos Python/Tkinter/adeptos/images/form.png",
         )
 
         self.btn_plot_barras = ttk.Button(
@@ -345,14 +345,14 @@ class AdeptosView:
             )
 
             img_paths = {
-                "Benfica": "benfica.png",
-                "Sporting": "sporting.png",
-                "Porto": "porto.png",
-                "Outros": "port.png",
+                "Benfica": "images/benfica.png",
+                "Sporting": "images/sporting.png",
+                "Porto": "images/porto.png",
+                "Outros": "images/port.png",
             }
 
             img_path = img_paths.get(
-                equipe, "port.png"
+                equipe, "images/port.png"
             )
             img = plt.imread(img_path)
 
