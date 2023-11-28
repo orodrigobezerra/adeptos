@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 from matplotlib.offsetbox import AnnotationBbox, OffsetImage
-import matplotlib.offsetbox as offsetbox
+
 
 
 class AdeptosView:
@@ -185,8 +185,8 @@ class AdeptosView:
     def clear_fields(self):
         self.entry_nome.delete(0, tk.END)
         self.entry_idade.delete(0, tk.END)
-        self.selected_distrito.set(None)
-        self.selected_equipa.set(None)
+        self.selected_distrito.set('')
+        self.selected_equipa.set('')
     
     def set_transparent_background(self, widget):
         img = tk.PhotoImage(width=1, height=1)
