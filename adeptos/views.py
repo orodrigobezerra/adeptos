@@ -169,6 +169,25 @@ class AdeptosView:
         )
         self.btn_exportar_relatorio.grid(row=4, column=0, padx=5, pady=(10, 33), sticky="N")
 
+    def get_adepto_info(self):
+        nome = self.entry_nome.get()
+        idade = self.entry_idade.get()
+        distrito = self.selected_distrito.get()
+        equipa = self.selected_equipa.get()
+        return nome, idade, distrito, equipa
+        self.btn_exportar_relatorio = ttk.Button(
+            frame_botoes,
+            text="Exportar Relatório PDF",
+            command=self.exportar_relatorio_pdf,
+        )
+        self.btn_exportar_relatorio.grid(row=4, column=0, padx=5, pady=(10, 33), sticky="N")
+
+    def clear_fields(self):
+        self.entry_nome.delete(0, tk.END)
+        self.entry_idade.delete(0, tk.END)
+        self.selected_distrito.set(None)
+        self.selected_equipa.set(None)
+    
     def set_transparent_background(self, widget):
         img = tk.PhotoImage(width=1, height=1)
         widget.configure(image=img)
